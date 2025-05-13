@@ -74,14 +74,6 @@ def respond(to_number, message: str = "", media_url: str = None) -> None:
         logger.error(f"Error enviando mensaje con Twilio: {e}")
         raise HTTPException(status_code=500, detail="No se pudo enviar el mensaje por WhatsApp")
 
-
-
-
-
-
-
-
-
 @app.post('/whatsapp-endpoint')
 async def whatsapp_endpoint(request: Request, From: str = Form(...), Body: str = Form(...)):
     logger.info(f'WhatsApp endpoint triggered...')

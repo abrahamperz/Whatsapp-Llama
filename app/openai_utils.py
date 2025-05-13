@@ -42,35 +42,49 @@ SUPPORTED_MODELS = {
 
 def gpt_without_functions(model, stream=False, messages=[]):
     """GPT model without function call."""
-    if model not in SUPPORTED_MODELS:
-        return False
-    response = completion(
-        model=model,
-        messages=messages,
-        temperature=TEMPERATURE,
-        max_tokens=MAX_TOKENS,
-        top_p=TOP_P,
-        stream=stream
-    )
-    return response
+    try:
+        if model not in SUPPORTED_MODELS:
+            raise ValueError(f"Modelo no soportado: {model}")
+        response = completion(
+            model=model,
+            messages=messages,
+            temperature=TEMPERATURE,
+            max_tokens=MAX_TOKENS,
+            top_p=TOP_P,
+            stream=stream
+        )
+        return response
+    except Exception as e:
+        print(f"Error en gpt_without_functions: {e}")
+        return {
+            "choices": [{
+                "message": {
+                    "content": "Hubo un problema técnico. Estamos trabajando en resolverlo. Gracias por su paciencia."
+                }
+            }]
+        }
 
 def summarise_conversation(history):
-    """Summarise conversation history in one sentence."""
-    conversation = ""
-    for item in history[-70:]:
-        if 'user_input' in item:
-            conversation += f"User: {item['user_input']}\n"
-        if 'bot_response' in item:
-            conversation += f"Bot: {item['bot_response']}\n"
+    """Resumir el historial de conversación en una sola frase."""
+    try:
+        conversation = ""
+        for item in history[-70:]:
+            if 'user_input' in item:
+                conversation += f"User: {item['user_input']}\n"
+            if 'bot_response' in item:
+                conversation += f"Bot: {item['bot_response']}\n"
 
-    openai_response = gpt_without_functions(
-        model=MODEL_NAME,
-        stream=False,
-        messages=[
-            {'role': 'system', 'content': SUMMARY_PROMPT},
-            {'role': 'user', 'content': conversation}
-        ]
-    )
+        openai_response = gpt_without_functions(
+            model=MODEL_NAME,
+            stream=False,
+            messages=[
+                {'role': 'system', 'content': SUMMARY_PROMPT},
+                {'role': 'user', 'content': conversation}
+            ]
+        )
 
-    chatbot_response = openai_response.choices[0].message.content.strip()
-    return chatbot_response
+        chatbot_response = openai_response["choices"][0]["message"]["content"].strip()
+        return chatbot_response
+    except Exception as e:
+        print(f"Error en summarise_conversation: {e}")
+        return "Hubo un problema al resumir la conversación. Estamos trabajando en resolverlo. Gracias por su paciencia."
