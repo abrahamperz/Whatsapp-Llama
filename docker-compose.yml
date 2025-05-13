@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  chatbot:
+    build:
+      context: .
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - 3002:3002
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - redis  # Asegura que Redis esté disponible antes de iniciar el chatbot
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
