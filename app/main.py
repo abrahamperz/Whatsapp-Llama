@@ -17,6 +17,7 @@ from app.logger_utils import logger
 # Load environment variables from a .env file
 load_dotenv()
 
+MODEL_NAME = os.getenv("LLM_MODEL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
@@ -112,7 +113,7 @@ async def whatsapp_endpoint(request: Request, From: str = Form(...), Body: str =
     # Get a response from OpenAI's GPT model
     try:
         openai_response = gpt_without_functions(
-            model="groq/llama3-70b-8192",
+            model=MODEL_NAME,
             stream=False,
             messages=[
                 {'role': 'system', 'content': system_prompt},
