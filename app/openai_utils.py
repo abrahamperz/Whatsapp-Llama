@@ -1,3 +1,4 @@
+# app/openai_utils.py
 import os
 from dotenv import load_dotenv
 from litellm import completion
